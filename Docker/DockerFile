@@ -38,11 +38,11 @@ RUN wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor 
     && rm -rf /var/lib/apt/lists/* packages.microsoft.gpg
 
 # 6. Set the working directory
-WORKDIR /upf_master_thesis
+WORKDIR /uc-miis-master-project-ws
 
 # 7. Source the workspace automatically on container startup
 RUN echo 'source /opt/ros/jazzy/setup.bash' >> ~/.bashrc && \
-    echo 'source /upf_master_thesis/thesis_ws/install/setup.bash' >> ~/.bashrc
+    echo 'source /uc-miis-master-project-ws/thesis_ws/install/setup.bash' >> ~/.bashrc
 
 # 8. Set Git global config (optional)
 RUN git config --global user.name "Name Surname" \
