@@ -12,9 +12,9 @@ docker run -it --rm \
     --env="QT_X11_NO_MITSHM=1" \
     --env="NVIDIA_DRIVER_CAPABILITIES=all" \
     --env="NVIDIA_VISIBLE_DEVICES=all" \
-    --env="GAZEBO_MODEL_PATH=/upf_master_thesis/models" \
+    --env="GAZEBO_MODEL_PATH=/uc-miis-master-project-ws/models" \
     --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-    --volume="$HOME/upf_master_thesis:/upf_master_thesis" \
-    --volume="$HOME/docker_vscode_user_data:/vscode-user-data" \
-    --volume="$HOME/docker_vscode_extensions:/vscode-extensions" \
+    --volume="$HOME/uc-miis-master-project-ws:/uc-miis-master-project-ws" \
+    --volume="$HOME/uc-miis-master-project-ws/docker_vscode_user_data:/vscode-user-data" \
+    --volume="$HOME/uc-miis-master-project-ws/docker_vscode_extensions:/vscode-extensions" \
     my-ros-jazzy-gazebo-vscode
