@@ -1,0 +1,83 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="turtlebot3_world">
+    <static>1</static>
+
+    <!-- Öndeki 4 m'lik duvar -->
+    <link name="wall_front">
+      <pose>0 1 0.25 0 0 0</pose>
+      <collision name="col_front">
+        <geometry>
+          <box><size>4.0 0.1 0.5</size></box>
+        </geometry>
+      </collision>
+      <visual name="vis_front">
+        <geometry>
+          <box><size>4.0 0.1 0.5</size></box>
+        </geometry>
+        <material>
+          <ambient>0.7 0.7 0.7 1</ambient>
+          <diffuse>0.7 0.7 0.7 1</diffuse>
+        </material>
+      </visual>
+    </link>
+
+    <!-- Arkadaki 4 m'lik duvar -->
+    <link name="wall_back">
+      <pose>0 -1 0.25 0 0 0</pose>
+      <collision name="col_back">
+        <geometry>
+          <box><size>4.0 0.1 0.5</size></box>
+        </geometry>
+      </collision>
+      <visual name="vis_back">
+        <geometry>
+          <box><size>4.0 0.1 0.5</size></box>
+        </geometry>
+        <material>
+          <ambient>0.7 0.7 0.7 1</ambient>
+          <diffuse>0.7 0.7 0.7 1</diffuse>
+        </material>
+      </visual>
+    </link>
+
+    <!-- Sağdaki 2 m'lik duvar -->
+    <link name="wall_right">
+      <pose>2 0 0.25 0 0 1.5708</pose>
+      <collision name="col_right">
+        <geometry>
+          <box><size>2.0 0.1 0.5</size></box>
+        </geometry>
+      </collision>
+      <visual name="vis_right">
+        <geometry>
+          <box><size>2.0 0.1 0.5</size></box>
+        </geometry>
+        <material>
+          <ambient>0.7 0.7 0.7 1</ambient>
+          <diffuse>0.7 0.7 0.7 1</diffuse>
+        </material>
+      </visual>
+    </link>
+
+    <!-- Soldaki 2 m'lik duvar -->
+    <link name="wall_left">
+      <pose>-2 0 0.25 0 0 1.5708</pose>
+      <collision name="col_left">
+        <geometry>
+          <box><size>2.0 0.1 0.5</size></box>
+        </geometry>
+      </collision>
+      <visual name="vis_left">
+        <geometry>
+          <box><size>2.0 0.1 0.5</size></box>
+        </geometry>
+        <material>
+          <ambient>0.7 0.7 0.7 1</ambient>
+          <diffuse>0.7 0.7 0.7 1</diffuse>
+        </material>
+      </visual>
+    </link>
+
+  </model>
+</sdf>

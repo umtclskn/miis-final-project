@@ -17,6 +17,8 @@ def generate_launch_description():
     )
     with open(urdf, "r") as f: robot_desc = f.read()
 
+    print("test")
+
     return LaunchDescription([
         DeclareLaunchArgument("namespace"),
         DeclareLaunchArgument("frame_prefix", default_value=""),
