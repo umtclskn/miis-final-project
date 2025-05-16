@@ -85,6 +85,7 @@ def generate_launch_description():
                 parameters=[{
                     'robot_description': Command(['xacro ', urdf_path]),
                     'frame_prefix': robot_name + '/',
+                    'publish_frequency': 60.0,
                     'use_sim_time': True
                 }],
             ),
@@ -113,9 +114,9 @@ def generate_launch_description():
         return qx, qy, qz, qw
 
     # 3 robotu spawn ediyoruz
-    robot1 = spawn_robot('robot1', -0.3, 0.5, 0.0, -2.11689 )
-    robot2 = spawn_robot('robot2',  0.05,-0.5, 0.0, 0.7518)
-    robot3 = spawn_robot('robot3', 1.25, -0.2, 0.0, 2.88)
+    robot1 = spawn_robot('robot1', -0.75, 0.75, 0.0, -0.75)
+    robot2 = spawn_robot('robot2',  0.25, -0.25, 0.0, -2.38)
+    robot3 = spawn_robot('robot3', 1.5, 0.5, 0.0, -3.14)
 
     # tf_republisher (opsiyonel)
     tf_republishers = [
