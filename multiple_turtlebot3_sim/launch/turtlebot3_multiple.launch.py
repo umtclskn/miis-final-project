@@ -117,6 +117,7 @@ def generate_launch_description():
     robot1 = spawn_robot('robot1', -0.75, 0.75, 0.0, -0.75)
     robot2 = spawn_robot('robot2',  0.25, -0.25, 0.0, -2.38)
     robot3 = spawn_robot('robot3', 1.5, 0.5, 0.0, -3.14)
+    main_robot = spawn_robot('main_robot', -1.75, 0.0, 0.0, 0.0)
 
     # tf_republisher (opsiyonel)
     tf_republishers = [
@@ -141,6 +142,13 @@ def generate_launch_description():
             arguments=['/robot3/tf'],
             output='screen',
         ),
+        Node(
+            package='multiple_turtlebot3_sim',
+            executable='tf_republisher',
+            name='main_robot_tf_republisher',
+            arguments=['/main_robot/tf'],
+            output='screen',
+        ),
     ]
 
 
@@ -151,6 +159,7 @@ def generate_launch_description():
     ld.add_action(robot1)
     ld.add_action(robot2)
     ld.add_action(robot3)
+    ld.add_action(main_robot)
     for republisher in tf_republishers:
         ld.add_action(republisher)
 
