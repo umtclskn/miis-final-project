@@ -10,8 +10,8 @@ from tf2_ros import Buffer, TransformListener, LookupException
 from geometry_msgs.msg import TransformStamped
 
 LOOKAHEAD_DIST = 0.3
-MAX_LIN_VEL = 0.25
-MAX_ANG_VEL = 1.0
+MAX_LIN_VEL = 0.1
+MAX_ANG_VEL = 0.5
 ANGLE_GAIN = 2.0
 DIST_GAIN = 1.0
 GOAL_THRESH = 0.15

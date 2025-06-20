@@ -30,9 +30,9 @@ def generate_launch_description():
     )
 
     # Robot başlatıcı
-    def spawn_robot(robot_name, x_pose, y_pose, z_pose, yaw):
-        model_path = os.path.join(package_dir, 'models', 'turtlebot3_burger', 'model.sdf')
-        urdf_path = os.path.join(package_dir, 'urdf', 'turtlebot3_burger.urdf')
+    def spawn_robot(robot_name, x_pose, y_pose, z_pose, yaw, model_type="turtlebot3_burger"):
+        model_path = os.path.join(package_dir, 'models', model_type, 'model.sdf')
+        urdf_path = os.path.join(package_dir, 'urdf', f"{model_type}.urdf")
 
         # SDF içerik oku ve robot adını yerleştir
         with open(model_path, 'r') as f:
@@ -114,10 +114,12 @@ def generate_launch_description():
         return qx, qy, qz, qw
 
     # 3 robotu spawn ediyoruz
-    robot1 = spawn_robot('robot1', -0.75, 0.75, 0.0, -0.75)
-    robot2 = spawn_robot('robot2',  0.25, -0.25, 0.0, -2.38)
-    robot3 = spawn_robot('robot3', 1.5, 0.5, 0.0, -3.14)
-    main_robot = spawn_robot('main_robot', -1.75, 0.0, 0.0, 0.0)
+    robot1 = spawn_robot('robot1', -0.75, 0.75, 0.0, -0.75, model_type="turtlebot3_burger")
+    robot2 = spawn_robot('robot2',  0.25, -0.25, 0.0, -2.38, model_type="turtlebot3_burger")
+    robot3 = spawn_robot('robot3', 1.5, 0.5, 0.0, -3.14, model_type="turtlebot3_burger")
+
+    main_robot = spawn_robot('main_robot', -1.7, 0.0, 0.0, 0.0, model_type="turtlebot3_burger")
+
 
     # tf_republisher (opsiyonel)
     tf_republishers = [
