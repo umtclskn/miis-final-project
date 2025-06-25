@@ -171,10 +171,21 @@ void PotentialField::calculate_velocity(
 }
 
 double PotentialField::score_intermediate_target(
-    const std::array<double,2>& simulated_final_pos,
-    const std::array<double,2>& goal_pos
+    const std::array<double,2>& sim_pos,
+    const std::array<double,2>& goal_pos,
+    const std::vector<double>& danger_history
 ) const
 {
-    double d = std::hypot(simulated_final_pos[0] - goal_pos[0], simulated_final_pos[1] - goal_pos[1]);
-    return -d;
+    const double alpha = 30.0;
+    const double beta = 300.0;
+
+    double dx = sim_pos[0] - goal_pos[0];
+    double dy = sim_pos[1] - goal_pos[1];
+    double s_xy = - (dx * dx) / alpha - (dy * dy) / beta;
+
+    double penalty = 0.0;
+    for (double risk : danger_history)
+        penalty += risk;
+
+    return s_xy + penalty;
 }

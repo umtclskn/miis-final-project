@@ -5,6 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /TF1/Frames1
+        - /robot2_path1
       Splitter Ratio: 0.5088235139846802
     Tree Height: 725
   - Class: rviz_common/Selection
@@ -202,7 +203,7 @@ Visualization Manager:
     - Alpha: 1
       Buffer Length: 1
       Class: rviz_default_plugins/Path
-      Color: 25; 255; 0
+      Color: 255; 170; 0
       Enabled: true
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
@@ -230,7 +231,7 @@ Visualization Manager:
     - Alpha: 1
       Buffer Length: 1
       Class: rviz_default_plugins/Path
-      Color: 25; 255; 0
+      Color: 85; 0; 127
       Enabled: true
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
@@ -372,10 +373,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5597963333129883
+      Pitch: 0.8247970342636108
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.13544225692749
+      Yaw: 4.115445137023926
     Saved: ~
 Window Geometry:
   Displays:

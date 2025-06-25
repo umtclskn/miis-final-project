@@ -1,5 +1,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "visualization_msgs/msg/marker.hpp"
+#include "nav_msgs/msg/path.hpp"
+
+
 #include "internal_simulation/internal_simulator.hpp"
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/buffer.h>
@@ -53,12 +56,22 @@ public:
 
         cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/main_robot/cmd_vel", 10);
 
+
+        for (const auto& robot_name : robot_names_) {
+            std::string topic_name = "/" + robot_name + "/path";
+            path_pubs_[robot_name] = this->create_publisher<nav_msgs::msg::Path>(topic_name, 10);
+            path_msgs_[robot_name].header.frame_id = "world";
+        }
+
     }
 
 private:
     // ROS üyeleri
     rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr marker_pub_;
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
+
+    std::map<std::string, rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr> path_pubs_;
+    std::map<std::string, nav_msgs::msg::Path> path_msgs_;
 
     rclcpp::Subscription<visualization_msgs::msg::Marker>::SharedPtr fov_marker_sub_;
     rclcpp::TimerBase::SharedPtr state_timer_;
@@ -71,6 +84,8 @@ private:
     std::map<std::string, RobotState> robot_states_;
     std::vector<GridCell> latest_fov_cells_;
     std::shared_ptr<InternalSimulator> internal_simulator_;
+
+    bool goal_reached_ = false;
 
     // --- Callback: FOV Marker’dan grid cell toplama ---
     void fov_callback(const visualization_msgs::msg::Marker::SharedPtr msg) {
@@ -96,12 +111,26 @@ private:
                 double cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z);
                 double yaw = std::atan2(siny_cosp, cosy_cosp);
                 robot_states_[robot_name] = {x, y, yaw};
+
+                // --- Her robot için path bilgisi güncelle ---
+                geometry_msgs::msg::PoseStamped pose;
+                pose.header.stamp = this->now();
+                pose.header.frame_id = "world";
+                pose.pose.position.x = x;
+                pose.pose.position.y = y;
+                pose.pose.orientation.w = 1.0; // Basitlik için sabit
+
+                path_msgs_[robot_name].header.stamp = this->now();
+                path_msgs_[robot_name].poses.push_back(pose);
+                path_pubs_[robot_name]->publish(path_msgs_[robot_name]);
+
             } catch (const tf2::TransformException& ex) {
                 RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 3000,
-                                     "TF Exception for %s: %s", robot_name.c_str(), ex.what());
+                                    "TF Exception for %s: %s", robot_name.c_str(), ex.what());
             }
         }
     }
+
 
     // --- Yardımcı: Basit differential drive trajectory ---
     std::vector<geometry_msgs::msg::Point> predict_trajectory(
@@ -199,6 +228,9 @@ private:
 
     // --- Marker yayını (best cell) ---
     void publish_best_cell_marker(const GridCell& best_cell) {
+        if (goal_reached_) 
+            return;
+
         visualization_msgs::msg::Marker marker;
         marker.header.frame_id = "world";
         marker.header.stamp = this->now();
@@ -222,6 +254,18 @@ private:
 
 
         const RobotState& main_robot_state = robot_states_["main_robot"];
+        double distance_to_goal = std::hypot(main_robot_state.x - GOAL_X, main_robot_state.y - GOAL_Y);
+
+        if (distance_to_goal < 0.05) {
+            geometry_msgs::msg::Twist twist;
+            twist.linear.x = 0.0;
+            twist.angular.z = 0.0;
+            cmd_vel_pub_->publish(twist);
+            RCLCPP_INFO(this->get_logger(), "Robot ana hedefe ulaştı ve durdu.");
+
+            goal_reached_ = true;  // hedefe ulaşıldı, bayrağı güncelle
+            return;
+        }
 
         // Grid hücresinin merkezi hedef
         double dx = best_cell.cx - main_robot_state.x;
@@ -249,6 +293,7 @@ private:
         twist.linear.x = v;
         twist.angular.z = w;
         cmd_vel_pub_->publish(twist);
+        
     }
 };
 

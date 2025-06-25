@@ -1,5 +1,6 @@
 #include "internal_simulation/internal_simulator.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include <chrono>
 
 // Potansiyel alan nesnesi kur
 InternalSimulator::InternalSimulator() : pf_() {}
@@ -11,6 +12,7 @@ double InternalSimulator::run(
     const std::array<double, 2>& goal)
 {
     // Simülasyon parametreleri
+    auto start = std::chrono::steady_clock::now();
     constexpr int steps = 100;
     constexpr double dt = 0.05;
 
@@ -41,6 +43,8 @@ double InternalSimulator::run(
     std::string dummy_zone;
     double dummy_min_dist;
 
+    std::vector<double> danger_history;  // her adım için risk skoru
+
     for (int t = 0; t < steps; ++t) {
         std::array<double,2> velocity;
         pf_.calculate_velocity(sim_pos, intermediate_target, obs_list, velocity, dummy_zone, dummy_min_dist);
@@ -49,16 +53,27 @@ double InternalSimulator::run(
         sim_pos[0] += velocity[0] * dt;
         sim_pos[1] += velocity[1] * dt;
 
+        // Simülasyon sırasında riskli bölgelerde bulunma cezası
+        if (dummy_zone == "Danger")
+            danger_history.push_back(-1.0);
+        else if (dummy_zone == "Repulsive")
+            danger_history.push_back(-0.3);
+        else
+            danger_history.push_back(0.0);
+
         // Not: istersen burada collision check veya ek log ekleyebilirsin.
     }
 
     // 5. Skor: Simülasyon sonunda hedefe olan uzaklık (negatif, daha yakın daha iyi)
-    double score = pf_.score_intermediate_target(sim_pos, goal);
+    double score = pf_.score_intermediate_target(sim_pos, goal, danger_history);
 
-    // 6. Log (isteğe bağlı)
+    // ZAMAN ÖLÇÜMÜ BİTİR
+    auto end = std::chrono::steady_clock::now();
+    auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+    // LOG
     RCLCPP_INFO(rclcpp::get_logger("InternalSimulator"),
-        "Cell (%d,%d) → sim_final (%.2f, %.2f), goal (%.2f, %.2f), score=%.2f",
-        target.i, target.j, sim_pos[0], sim_pos[1], goal[0], goal[1], score);
-
+        "Internal simulation for grid (%d,%d): score=%.5f, time=%ld ms",
+        target.i, target.j, score, duration_ms);        
     return score;
 }

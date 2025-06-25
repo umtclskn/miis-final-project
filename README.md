@@ -3,7 +3,15 @@ ROS 2 + Gazebo Harmonic based multi-robot simulation for TurtleBot3 Burger. Incl
 
 # UPF_Master_Thesis
 
+ros2 launch multiple_turtlebot3_sim turtlebot3_multiple.launch.py
 
+ros2 run ego_vehicle_fov grid_cells_in_fov
+
+ros2 run internal_simulation ego_robot_decision_node
+
+ros2 launch multiple_turtlebot3_sim multi_robot_path_tracker.launch.py
+
+rviz2 open with miis-final-project/ego_vehicle_fov/config/ego_vehicle_fov_v1.rviz
 
 ## Getting started
 

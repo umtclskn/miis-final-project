@@ -151,23 +151,7 @@ class TrajectoryFollower(Node):
 
         gx, gy = self.goals[self.current_goal_index]
 
-        # Robot çarpışma kontrolü
-        avoidance_active = False
-        avoidance_dx, avoidance_dy = 0.0, 0.0
-        
-        if self.avoid_robots and self.other_robot_positions:
-            robot_nearby, nearby_robot, nearby_pose = self.is_robot_nearby(x, y)
-            if robot_nearby:
-                other_x, other_y, _ = nearby_pose
-                avoidance_dx, avoidance_dy = self.calculate_avoidance_vector(x, y, other_x, other_y)
-                
-                # Eğer çarpışma kaçınma aktifse, geçici olarak hedefi değiştir
-                if math.hypot(avoidance_dx, avoidance_dy) > 0.1:
-                    avoidance_active = True
-                    self.get_logger().info(f"Avoiding robot {nearby_robot} at distance {math.hypot(other_x - x, other_y - y):.2f}m")
-                    # Hedef konumu düzelt
-                    gx = x + avoidance_dx * ROBOT_SAFETY_RADIUS * 2
-                    gy = y + avoidance_dy * ROBOT_SAFETY_RADIUS * 2
+        # Robot avoidance tamamen bypass edildi!
 
         dx, dy = gx - x, gy - y
         distance = math.hypot(dx, dy)
@@ -175,18 +159,12 @@ class TrajectoryFollower(Node):
         angle_error = math.atan2(math.sin(angle_to_goal - yaw), math.cos(angle_to_goal - yaw))
 
         twist = Twist()
-        if avoidance_active or distance > GOAL_THRESH:
-            # Çarpışma önleme aktifse veya hedefe uzaksa
+        if distance > GOAL_THRESH:
             twist.angular.z = max(-MAX_ANG_VEL, min(MAX_ANG_VEL, ANGLE_GAIN * angle_error))
-            
-            # Eğer kaçınma aktifse veya doğru açıya yakınsa ileri git
-            if avoidance_active or abs(angle_error) < math.pi / 4:
+            if abs(angle_error) < math.pi / 4:
                 speed = min(MAX_LIN_VEL, DIST_GAIN * distance)
-                # Eğer çarpışma önleme aktifse, hızı azalt
-                if avoidance_active:
-                    speed *= 0.7
                 twist.linear.x = speed
-        elif not avoidance_active and distance <= GOAL_THRESH:
+        elif distance <= GOAL_THRESH:
             self.get_logger().info(f"Goal {self.current_goal_index+1} reached")
             self.current_goal_index += 1
 

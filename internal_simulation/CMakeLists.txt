@@ -11,6 +11,8 @@ find_package(rclcpp REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(nav_msgs REQUIRED)
+
 
 # Include directory (header files)
 include_directories(include)
@@ -44,6 +46,7 @@ ament_target_dependencies(
   "visualization_msgs"
   "geometry_msgs"
   "tf2_ros"
+  "nav_msgs"
 )
 
 # Link node to internal simulator library
