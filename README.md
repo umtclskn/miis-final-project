@@ -11,6 +11,9 @@ ros2 run internal_simulation ego_robot_decision_node
 
 ros2 launch multiple_turtlebot3_sim multi_robot_path_tracker.launch.py
 
+ros2 topic pub /ready_to_start std_msgs/Bool "data: true"
+
+
 rviz2 open with miis-final-project/ego_vehicle_fov/config/ego_vehicle_fov_v1.rviz
 
 ## Getting started

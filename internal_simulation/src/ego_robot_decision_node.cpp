@@ -13,6 +13,7 @@
 #include <memory>
 #include <limits>
 #include <array>
+#include "std_msgs/msg/bool.hpp"
 
 // --- Sabitler ---
 constexpr double WORLD_X_MIN = -2.0;
@@ -63,6 +64,17 @@ public:
             path_msgs_[robot_name].header.frame_id = "world";
         }
 
+
+        ready_sub_ = this->create_subscription<std_msgs::msg::Bool>(
+            "/ready_to_start",
+            1,
+            [this](const std_msgs::msg::Bool::SharedPtr msg){
+                if (msg->data) {
+                    ready_to_start_ = true;
+                    RCLCPP_INFO(this->get_logger(), "Global READY signal received!");
+                }
+            }
+        );
     }
 
 private:
@@ -85,6 +97,8 @@ private:
     std::vector<GridCell> latest_fov_cells_;
     std::shared_ptr<InternalSimulator> internal_simulator_;
 
+    bool ready_to_start_ = false;
+    rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr ready_sub_;   
     bool goal_reached_ = false;
 
     // --- Callback: FOV Marker’dan grid cell toplama ---
@@ -152,6 +166,10 @@ private:
 
     // --- Ana karar fonksiyonu ---
     void decision_callback() {
+        if (!ready_to_start_) {
+            // Harekete başlamadan bekle
+            return;
+        }
         // Diğer robotlar için future trajectory/prediction
         std::vector<PredictedObstacle> predicted_obstacle_list;
         int marker_id = 0;
@@ -228,6 +246,9 @@ private:
 
     // --- Marker yayını (best cell) ---
     void publish_best_cell_marker(const GridCell& best_cell) {
+        if (!ready_to_start_)
+            return;
+
         if (goal_reached_) 
             return;
 

@@ -8,6 +8,8 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from tf2_ros import Buffer, TransformListener, LookupException
 from geometry_msgs.msg import TransformStamped
+from std_msgs.msg import Bool
+
 
 LOOKAHEAD_DIST = 0.3
 MAX_LIN_VEL = 0.1
@@ -65,6 +67,20 @@ class TrajectoryFollower(Node):
 
         self.robot_check_timer = self.create_timer(0.2, self.check_other_robots)
         self.timer = self.create_timer(0.1, self.control_loop)
+
+
+        self.ready_to_start = False
+        self.ready_sub = self.create_subscription(
+            Bool,
+            '/ready_to_start',         # Topic adı global olmalı!
+            self.ready_callback,
+            1
+        )
+
+    def ready_callback(self, msg):
+        if msg.data:
+            self.ready_to_start = True
+            self.get_logger().info("Global READY signal received!")
 
     def load_path(self, path_file):
         with open(path_file, 'r') as f:
@@ -130,6 +146,9 @@ class TrajectoryFollower(Node):
         return dx/dist * strength, dy/dist * strength
 
     def control_loop(self):
+        if not self.ready_to_start:
+            return  # Sinyal gelene kadar bekle
+
         pose = self.get_robot_pose()
         if pose is None or self.scan is None:
             return
